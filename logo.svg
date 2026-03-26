@@ -1,0 +1,31 @@
+<svg width="220" height="52" viewBox="0 0 220 52" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Compass needle mark — centred at (24, 26) -->
+  <!-- North point: gold -->
+  <path d="M 24 5 L 29.5 25 L 24 21 L 18.5 25 Z" fill="#b8832a"/>
+  <!-- South point: muted white -->
+  <path d="M 24 47 L 29.5 27 L 24 31 L 18.5 27 Z" fill="rgba(255,255,255,0.22)"/>
+  <!-- Pivot circle -->
+  <circle cx="24" cy="26" r="2.5" fill="#ffffff" opacity="0.9"/>
+  <!-- Subtle N marker above north point -->
+  <text x="24" y="3" font-family="'DM Sans', sans-serif" font-size="6" font-weight="600"
+        fill="#b8832a" text-anchor="middle" letter-spacing="0.05em">N</text>
+
+  <!-- Wordmark -->
+  <!-- "VISA" — smaller, muted, wide tracking -->
+  <text x="46" y="20"
+        font-family="'DM Sans', sans-serif"
+        font-size="10"
+        font-weight="500"
+        fill="rgba(255,255,255,0.48)"
+        letter-spacing="0.22em">VISA</text>
+
+  <!-- "COMPASS" — large, dominant, white -->
+  <text x="46" y="38"
+        font-family="'DM Sans', sans-serif"
+        font-size="18"
+        font-weight="700"
+        fill="#ffffff"
+        letter-spacing="0.06em">COMPASS</text>
+
+</svg>

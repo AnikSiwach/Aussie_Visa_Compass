@@ -1,0 +1,4887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visa Compass — Subclass 500 Student Visa Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0f0f;--ink2:#3a3a3a;--ink3:#888;--ink4:#bbb;
+  --bg:#f5f4f0;--surface:#fff;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
+  --gold:#b8832a;--gold-bg:#fdf3e3;
+  --up:#1a6b40;--up-bg:#e6f4ed;
+  --dn:#b02828;--dn-bg:#fae8e8;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);height:100vh;font-size:13px;line-height:1.5;overflow:hidden;display:flex;flex-direction:column}
+
+.header{background:var(--ink);display:flex;flex-direction:column;flex-shrink:0}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.vc-logo{display:flex;align-items:center;gap:14px}
+.vc-mark{flex-shrink:0;display:block}
+.vc-wordmark{display:flex;flex-direction:column}
+.vc-label-visa{font-size:9px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.24em;text-transform:uppercase;display:block}
+.vc-label-compass{font-family:'Playfair Display',serif;font-style:italic;font-size:24px;font-weight:400;color:#fff;line-height:1;display:block}
+.vc-subtitle{font-size:8.5px;font-weight:400;color:rgba(255,255,255,0.25);letter-spacing:0.16em;text-transform:uppercase;margin-top:5px;display:block}
+.hkpis{display:flex;flex-shrink:0;align-items:flex-start}
+.hkpi{text-align:right;padding:0 20px;border-left:1px solid rgba(255,255,255,0.09)}
+.hkpi:first-child{border-left:none}
+.hkpi-v{font-family:'Instrument Serif',serif;font-size:28px;color:#fff;line-height:1}
+#hkpi-r{color:var(--gold)}
+.hkpi-l{font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.14em;margin-top:4px}
+.header-nav{display:none;padding:0 16px}
+.nav-tab{font-size:12px;font-family:'DM Sans',sans-serif;letter-spacing:0.03em;color:rgba(255,255,255,0.42);text-decoration:none;padding:13px 18px;border-bottom:2px solid transparent;transition:color .15s ease;display:block}
+.nav-tab:hover{color:rgba(255,255,255,0.75)}
+.nav-tab.active{color:#fff;border-bottom-color:var(--gold)}
+
+.controls{background:var(--bg);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.05)}
+.metric-tabs{display:flex;align-items:center;gap:4px}
+.mtab{padding:6px 14px;font-size:12.5px;font-weight:400;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.mtab:hover{color:var(--ink2)}
+.mtab.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:600}
+.ctrl-right{display:flex;align-items:center;gap:10px}
+.year-pills{display:flex;background:#e8e7e2;border-radius:999px;padding:3px;gap:2px}
+.ypill{padding:5px 14px;font-size:12px;border:none;background:none;border-radius:999px;cursor:pointer;color:var(--ink3);font-family:'DM Sans',sans-serif;font-weight:400;transition:all .15s ease;white-space:nowrap}
+.ypill.active{background:#0f0f0f;color:#fff;font-weight:500;box-shadow:none}
+.ctrl-meta{font-size:10px;color:var(--ink4)}
+
+.filter-bar{background:var(--bg);padding:10px 32px;border-bottom:1px solid #e8e6e0;flex-shrink:0;display:flex;align-items:flex-start}
+.filter-rows{display:flex;flex-direction:column;gap:6px;flex:1}
+.filter-row{display:flex;align-items:center}
+.filter-label{font-size:9px;font-family:'DM Sans',sans-serif;color:rgba(0,0,0,0.35);letter-spacing:0.14em;text-transform:uppercase;margin-right:12px;white-space:nowrap;align-self:center;min-width:46px}
+.fpills{display:flex;flex-wrap:wrap;gap:5px}
+.fpill{font-size:11px;font-family:'DM Sans',sans-serif;padding:5px 13px;border-radius:999px;border:1px solid #e8e6e0;background:transparent;color:#6b6b6b;cursor:pointer;transition:border-color .15s ease,color .15s ease;white-space:nowrap}
+.fpill:hover{border-color:#b8832a;color:#1a1a1a}
+.fpill.active{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
+.filter-clear{font-size:10px;color:#b8832a;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0 0 0 20px;align-self:center;display:none;white-space:nowrap}
+.filter-clear.show{display:block}
+
+.main{display:grid;grid-template-columns:1fr 320px;flex:1;min-height:0}
+
+.map-panel{position:relative;background:var(--bg);overflow:hidden;border-right:1px solid var(--border)}
+#map-svg{width:100%;height:100%;display:block}
+.map-overlay{position:absolute;bottom:44px;left:24px;right:24px;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}
+.map-attribution{position:absolute;bottom:8px;left:24px;font-size:9px;color:rgba(0,0,0,0.35);letter-spacing:0.04em;line-height:1.6;pointer-events:none}
+.legend{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.95);border:1px solid var(--border2);border-radius:5px;padding:8px 14px;pointer-events:all}
+.leg-label{font-size:9.5px;color:var(--ink3);min-width:20px}
+#legend-canvas{width:100px;height:7px;border-radius:3px;display:block}
+.data-note{font-size:9.5px;color:rgba(80,80,80,.7);background:rgba(255,255,255,.88);padding:4px 9px;border-radius:4px;border:1px solid var(--border)}
+
+#tooltip{position:fixed;background:#1a1a1a;color:#fff;border-radius:10px;padding:14px 18px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:999;min-width:210px;max-width:220px;box-shadow:0 2px 12px rgba(0,0,0,.10),0 8px 24px rgba(0,0,0,.18)}
+#tooltip.show{opacity:1}
+.tt-name{font-family:'Instrument Serif',serif;font-size:14px;font-weight:400;margin-bottom:4px}
+.tt-ctx{font-size:10px;color:rgba(255,255,255,.42);letter-spacing:0.06em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.1)}
+.tt-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:4px}
+.tt-lbl{font-size:11px;color:rgba(255,255,255,.6)}
+.tt-val{font-size:13px;font-weight:500}
+.tt-primary .tt-lbl{color:rgba(255,255,255,.82);font-weight:500}
+.tt-primary .tt-val{font-size:14px}
+.tt-divider{border-top:1px solid rgba(255,255,255,.1);margin:7px 0}
+.tt-muted{opacity:0.45}
+.tt-chg{font-size:11px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}
+
+.table-panel{background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+.tpanel-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tpanel-title{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);font-weight:500}
+.tpanel-sub{font-size:12px;color:var(--ink3);margin-top:3px}
+.tscroll{overflow-y:auto;flex:1}
+.tscroll::-webkit-scrollbar{width:3px}
+.tscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);font-weight:500;padding:8px 16px;text-align:left;position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);z-index:1}
+thead th.r{text-align:right}
+tbody td{padding:9px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s;cursor:default}
+tbody tr:hover td{background:rgba(245,244,240,0.8)}
+tbody tr.hl td{background:var(--gold-bg)!important}
+.rn{font-size:10.5px;color:rgba(184,131,42,0.55);width:22px;font-weight:500}
+.rc{font-size:12px;color:var(--ink);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.rv{font-size:12px;font-weight:500;text-align:right}
+.rchg{font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px;white-space:nowrap;display:inline-block;float:right}
+.rchg.up{background:var(--up-bg);color:var(--up)}
+.rchg.dn{background:var(--dn-bg);color:var(--dn)}
+.rchg.neu{background:#f0f0ee;color:var(--ink3)}
+.tpanel-foot{padding:14px 20px;border-top:1px solid var(--border);background:#fafaf8;display:flex;justify-content:space-between;flex-shrink:0}
+.tfoot-item{text-align:center}
+.tfoot-v{font-family:'Instrument Serif',serif;font-size:18px;font-weight:400;color:var(--ink)}
+.tfoot-l{font-size:9.5px;color:var(--ink4);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+.country{stroke:#fff;stroke-width:.35;cursor:pointer;transition:opacity .12s}
+.country:hover{stroke-width:.9;stroke:rgba(0,0,0,.2)}
+.no-data{fill:#dddcd8!important;cursor:default;stroke:#e5e4e0}
+
+/* ── TABLET (≤1023px) ──────────────────────────────────────────────────────── */
+@media (max-width:1023px){
+  .main{grid-template-columns:1fr 270px}
+  .header-top{padding:14px 24px}
+  .hkpi{padding:0 12px}
+  .controls{padding:10px 24px}
+  .filter-bar{padding:8px 24px}
+  .fpills{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .fpills::-webkit-scrollbar{display:none}
+}
+
+/* ── MOBILE TAB TOGGLE (default hidden) ────────────────────────────────────── */
+.mob-tabs{display:none;background:var(--bg);border-bottom:1px solid #e8e6e0;flex-shrink:0;padding:0 16px}
+.mob-tab{flex:1;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;padding:11px 0;cursor:pointer;transition:all .15s;font-weight:400}
+.mob-tab.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:600}
+
+/* ── PHONE (<640px) ─────────────────────────────────────────────────────────── */
+@media (max-width:639px){
+  /* Header */
+  .header-top{padding:10px 16px}
+  .vc-subtitle{display:none}
+  .vc-label-compass{font-size:20px}
+  .hkpi{padding:0 8px}
+  .hkpi-v{font-size:16px}
+  .hkpi-l{font-size:7px;letter-spacing:0.08em}
+  /* Controls: metric tabs full-width on first row, period pills second row */
+  .controls{padding:8px 16px;flex-wrap:wrap;gap:6px}
+  .metric-tabs{width:100%}
+  .mtab{flex:1;text-align:center;padding:6px 6px;font-size:11px}
+  .ctrl-right{margin-left:auto}
+  .ctrl-meta{display:none}
+  /* Filter bar */
+  .filter-bar{padding:8px 16px}
+  .filter-label{display:none}
+  .filter-row{overflow:hidden}
+  .fpills{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .fpills::-webkit-scrollbar{display:none}
+  /* Show mobile tabs */
+  .mob-tabs{display:flex}
+  /* Main: single column flex, each panel fills height */
+  .main{display:flex;flex-direction:column}
+  .map-panel{flex:1;min-height:0;border-right:none}
+  .table-panel{flex:1;min-height:0;display:none}
+  .table-panel.mob-shown{display:flex}
+  .map-panel.mob-hidden{display:none}
+  /* Map overlay adjustments */
+  .map-overlay{bottom:12px}
+  .map-attribution{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="vc-logo">
+      <svg class="vc-mark" width="22" height="40" viewBox="0 0 22 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="11,2 15,19 11,15.5 7,19" fill="#b8832a"/>
+        <polygon points="11,38 15,23 11,26.5 7,23" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="11" cy="20" r="2" fill="white" opacity="0.85"/>
+      </svg>
+      <div class="vc-wordmark">
+        <span class="vc-label-visa">Visa</span>
+        <span class="vc-label-compass">Compass</span>
+        <span class="vc-subtitle">Subclass 500 &middot; Student Visa Data</span>
+      </div>
+    </div>
+    <div class="hkpis">
+      <div class="hkpi"><div class="hkpi-v" id="hkpi-l">&#8212;</div><div class="hkpi-l" id="hkpi-l-lbl">Lodged</div></div>
+      <div class="hkpi"><div class="hkpi-v" id="hkpi-g">&#8212;</div><div class="hkpi-l" id="hkpi-g-lbl">Granted</div></div>
+      <div class="hkpi"><div class="hkpi-v" id="hkpi-r">&#8212;</div><div class="hkpi-l">Grant Rate</div></div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a class="nav-tab active" href="#">Overview</a>
+    <a class="nav-tab" href="#">Source Countries</a>
+    <a class="nav-tab" href="#">Sectors</a>
+    <a class="nav-tab" href="#">Trends</a>
+    <a class="nav-tab" href="#">Invitations</a>
+  </nav>
+  <span id="header-meta" style="display:none"></span>
+</div>
+
+<div class="controls">
+  <div class="metric-tabs">
+    <button class="mtab active" data-metric="lodged">Visas Lodged</button>
+    <button class="mtab" data-metric="granted">Visas Granted</button>
+    <button class="mtab" data-metric="rate">Grant Rate</button>
+  </div>
+  <div class="ctrl-right">
+    <div class="year-pills">
+      <button class="ypill active" data-period="fy2425">FY 2024&ndash;25</button>
+      <button class="ypill" data-period="ytd">YTD Jan 2026</button>
+    </div>
+    <span class="ctrl-meta" id="ctrl-meta">164 countries mapped</span>
+  </div>
+</div>
+
+<div class="filter-bar" id="filter-bar">
+  <div class="filter-rows">
+    <div class="filter-row">
+      <span class="filter-label">Sector</span>
+      <div class="fpills" id="sector-pills">
+        <button class="fpill active" data-sector="all">All Sectors</button>
+        <button class="fpill" data-sector="higher_ed">Higher Ed</button>
+        <button class="fpill" data-sector="vet">VET</button>
+        <button class="fpill" data-sector="elicos">ELICOS</button>
+        <button class="fpill" data-sector="schools">Schools</button>
+        <button class="fpill" data-sector="postgrad_research">Postgrad Research</button>
+        <button class="fpill" data-sector="non_award">Non-Award</button>
+        <button class="fpill" data-sector="foreign_affairs">Foreign Affairs</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Region</span>
+      <div class="fpills" id="region-pills">
+        <button class="fpill active" data-region="all">All Regions</button>
+        <button class="fpill" data-region="South Asia">South Asia</button>
+        <button class="fpill" data-region="East Asia">East Asia</button>
+        <button class="fpill" data-region="Southeast Asia">Southeast Asia</button>
+        <button class="fpill" data-region="Latin America">Latin America</button>
+        <button class="fpill" data-region="Europe">Europe</button>
+        <button class="fpill" data-region="Africa">Africa</button>
+        <button class="fpill" data-region="Pacific">Pacific</button>
+        <button class="fpill" data-region="Middle East &amp; Central Asia">Middle East &amp; Central Asia</button>
+        <button class="fpill" data-region="North America &amp; Oceania">North America &amp; Oceania</button>
+      </div>
+    </div>
+  </div>
+  <button class="filter-clear" id="filter-clear">Clear filters</button>
+</div>
+
+<div class="mob-tabs" id="mob-tabs">
+  <button class="mob-tab active" data-view="map">Map</button>
+  <button class="mob-tab" data-view="table">Table</button>
+</div>
+
+<div class="main">
+  <div class="map-panel">
+    <svg id="map-svg"></svg>
+    <div class="map-overlay">
+      <div class="legend">
+        <span class="leg-label" id="leg-lo"></span>
+        <canvas id="legend-canvas" width="90" height="6"></canvas>
+        <span class="leg-label" id="leg-hi"></span>
+      </div>
+      <div class="data-note" id="data-note">167 countries</div>
+    </div>
+    <div class="map-attribution">Source: Dept. of Home Affairs &middot; BP0015 Student Visa Statistics &middot; locked 31 Jan 2026 &middot; Primary applicants only<br>Grant rate = visas granted &divide; visas lodged for the selected period</div>
+  </div>
+
+  <div class="table-panel">
+    <div class="tpanel-head">
+      <div class="tpanel-title" id="tp-title">Top 25 &middot; Visas Lodged</div>
+      <div class="tpanel-sub" id="tp-sub">FY 2024&ndash;25 &middot; ranked by volume</div>
+    </div>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>#</th><th>Country</th><th class="r">Value</th><th class="r">YoY</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="tpanel-foot">
+      <div class="tfoot-item"><div class="tfoot-v" id="tf-l">&#8212;</div><div class="tfoot-l">Total lodged</div></div>
+      <div class="tfoot-item"><div class="tfoot-v" id="tf-g">&#8212;</div><div class="tfoot-l">Total granted</div></div>
+      <div class="tfoot-item"><div class="tfoot-v" id="tf-r">&#8212;</div><div class="tfoot-l">Overall rate</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const VISA_DATA = {
+  "756": {
+    "name": "Switzerland",
+    "lodged": {
+      "fy2425": 663,
+      "fy2324": 659,
+      "ytd": 367,
+      "change": 0.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 651,
+      "fy2324": 653,
+      "ytd": 375,
+      "change": -0.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.2,
+      "fy2324": 99.1,
+      "ytd": 102.2,
+      "change": -0.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 44
+  },
+  "124": {
+    "name": "Canada",
+    "lodged": {
+      "fy2425": 1884,
+      "fy2324": 2056,
+      "ytd": 1390,
+      "change": -8.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1846,
+      "fy2324": 1909,
+      "ytd": 1434,
+      "change": -3.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.0,
+      "fy2324": 92.9,
+      "ytd": 103.2,
+      "change": 5.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 31
+  },
+  "462": {
+    "name": "Maldives",
+    "lodged": {
+      "fy2425": 126,
+      "fy2324": 116,
+      "ytd": 115,
+      "change": 8.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 130,
+      "fy2324": 109,
+      "ytd": 108,
+      "change": 19.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 103.2,
+      "fy2324": 94.0,
+      "ytd": 93.9,
+      "change": 9.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 74
+  },
+  "372": {
+    "name": "Ireland, Republic of",
+    "lodged": {
+      "fy2425": 522,
+      "fy2324": 555,
+      "ytd": 308,
+      "change": -5.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 530,
+      "fy2324": 377,
+      "ytd": 225,
+      "change": 40.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 101.5,
+      "fy2324": 67.9,
+      "ytd": 73.1,
+      "change": 33.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 49
+  },
+  "246": {
+    "name": "Finland",
+    "lodged": {
+      "fy2425": 146,
+      "fy2324": 165,
+      "ytd": 95,
+      "change": -11.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 141,
+      "fy2324": 156,
+      "ytd": 102,
+      "change": -9.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 96.6,
+      "fy2324": 94.5,
+      "ytd": 107.4,
+      "change": 2.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 72
+  },
+  "558": {
+    "name": "Nicaragua",
+    "lodged": {
+      "fy2425": 7,
+      "fy2324": 8,
+      "ytd": 3,
+      "change": -12.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 4,
+      "fy2324": 5,
+      "ytd": 4,
+      "change": -20.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 57.1,
+      "fy2324": 62.5,
+      "ytd": 133.3,
+      "change": -5.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 140
+  },
+  "214": {
+    "name": "Dominican Republic",
+    "lodged": {
+      "fy2425": 18,
+      "fy2324": 32,
+      "ytd": 4,
+      "change": -43.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11,
+      "fy2324": 22,
+      "ytd": 7,
+      "change": -50.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 61.1,
+      "fy2324": 68.8,
+      "ytd": 175.0,
+      "change": -7.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 124
+  },
+  "232": {
+    "name": "Eritrea",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 2,
+      "ytd": 4,
+      "change": 50.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 3,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 33.3,
+      "fy2324": 50.0,
+      "ytd": 75.0,
+      "change": -16.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 158
+  },
+  "404": {
+    "name": "Kenya",
+    "lodged": {
+      "fy2425": 3840,
+      "fy2324": 7271,
+      "ytd": 4803,
+      "change": -47.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1892,
+      "fy2324": 4254,
+      "ytd": 2824,
+      "change": -55.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 49.3,
+      "fy2324": 58.5,
+      "ytd": 58.8,
+      "change": -9.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 19
+  },
+  "780": {
+    "name": "Trinidad and Tobago",
+    "lodged": {
+      "fy2425": 8,
+      "fy2324": 6,
+      "ytd": 7,
+      "change": 33.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 9,
+      "fy2324": 4,
+      "ytd": 5,
+      "change": 125.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 112.5,
+      "fy2324": 66.7,
+      "ytd": 71.4,
+      "change": 45.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 138
+  },
+  "562": {
+    "name": "Niger",
+    "lodged": {
+      "fy2425": 5,
+      "fy2324": 7,
+      "ytd": 1,
+      "change": -28.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 3,
+      "ytd": 2,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 60.0,
+      "fy2324": 42.9,
+      "ytd": 200.0,
+      "change": 17.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 147
+  },
+  "646": {
+    "name": "Rwanda",
+    "lodged": {
+      "fy2425": 27,
+      "fy2324": 31,
+      "ytd": 22,
+      "change": -12.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 21,
+      "fy2324": 20,
+      "ytd": 18,
+      "change": 5.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 77.8,
+      "fy2324": 64.5,
+      "ytd": 81.8,
+      "change": 13.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 107
+  },
+  "144": {
+    "name": "Sri Lanka",
+    "lodged": {
+      "fy2425": 8111,
+      "fy2324": 10860,
+      "ytd": 4445,
+      "change": -25.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 7859,
+      "fy2324": 7254,
+      "ytd": 3565,
+      "change": 8.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 96.9,
+      "fy2324": 66.8,
+      "ytd": 80.2,
+      "change": 30.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 11
+  },
+  "148": {
+    "name": "Chad",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 0,
+      "ytd": 0,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 0,
+      "fy2324": 0,
+      "ytd": 1,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 0.0,
+      "fy2324": null,
+      "ytd": null,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 152
+  },
+  "724": {
+    "name": "Spain",
+    "lodged": {
+      "fy2425": 3071,
+      "fy2324": 3536,
+      "ytd": 1597,
+      "change": -13.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3085,
+      "fy2324": 3171,
+      "ytd": 1584,
+      "change": -2.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.5,
+      "fy2324": 89.7,
+      "ytd": 99.2,
+      "change": 10.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 23
+  },
+  "703": {
+    "name": "Slovakia",
+    "lodged": {
+      "fy2425": 114,
+      "fy2324": 146,
+      "ytd": 67,
+      "change": -21.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 105,
+      "fy2324": 107,
+      "ytd": 67,
+      "change": -1.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 92.1,
+      "fy2324": 73.3,
+      "ytd": 100.0,
+      "change": 18.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 78
+  },
+  "862": {
+    "name": "Venezuela",
+    "lodged": {
+      "fy2425": 122,
+      "fy2324": 303,
+      "ytd": 54,
+      "change": -59.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 65,
+      "fy2324": 106,
+      "ytd": 21,
+      "change": -38.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 53.3,
+      "fy2324": 35.0,
+      "ytd": 38.9,
+      "change": 18.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 76
+  },
+  "203": {
+    "name": "Czechia",
+    "lodged": {
+      "fy2425": 239,
+      "fy2324": 281,
+      "ytd": 124,
+      "change": -14.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 235,
+      "fy2324": 220,
+      "ytd": 122,
+      "change": 6.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.3,
+      "fy2324": 78.3,
+      "ytd": 98.4,
+      "change": 20.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 63
+  },
+  "434": {
+    "name": "Libya",
+    "lodged": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 1,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 0,
+      "ytd": 0,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 0.0,
+      "ytd": 0.0,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 164
+  },
+  "196": {
+    "name": "Cyprus",
+    "lodged": {
+      "fy2425": 18,
+      "fy2324": 26,
+      "ytd": 3,
+      "change": -30.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 12,
+      "fy2324": 19,
+      "ytd": 4,
+      "change": -36.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 73.1,
+      "ytd": 133.3,
+      "change": -6.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 125
+  },
+  "616": {
+    "name": "Poland",
+    "lodged": {
+      "fy2425": 322,
+      "fy2324": 372,
+      "ytd": 129,
+      "change": -13.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 317,
+      "fy2324": 244,
+      "ytd": 146,
+      "change": 29.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.4,
+      "fy2324": 65.6,
+      "ytd": 113.2,
+      "change": 32.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 55
+  },
+  "554": {
+    "name": "New Zealand",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 4,
+      "ytd": 0,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 2,
+      "ytd": 1,
+      "change": 50.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 75.0,
+      "fy2324": 50.0,
+      "ytd": null,
+      "change": 25.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 153
+  },
+  "275": {
+    "name": "Palestine, State of",
+    "lodged": {
+      "fy2425": 14,
+      "fy2324": 37,
+      "ytd": 11,
+      "change": -62.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 10,
+      "fy2324": 31,
+      "ytd": 9,
+      "change": -67.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 71.4,
+      "fy2324": 83.8,
+      "ytd": 81.8,
+      "change": -12.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 128
+  },
+  "233": {
+    "name": "Estonia",
+    "lodged": {
+      "fy2425": 99,
+      "fy2324": 100,
+      "ytd": 48,
+      "change": -1.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 98,
+      "fy2324": 38,
+      "ytd": 36,
+      "change": 157.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 99.0,
+      "fy2324": 38.0,
+      "ytd": 75.0,
+      "change": 61.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 83
+  },
+  "716": {
+    "name": "Zimbabwe",
+    "lodged": {
+      "fy2425": 695,
+      "fy2324": 1085,
+      "ytd": 416,
+      "change": -35.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 512,
+      "fy2324": 587,
+      "ytd": 432,
+      "change": -12.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 73.7,
+      "fy2324": 54.1,
+      "ytd": 103.8,
+      "change": 19.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 43
+  },
+  "508": {
+    "name": "Mozambique",
+    "lodged": {
+      "fy2425": 20,
+      "fy2324": 29,
+      "ytd": 14,
+      "change": -31.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 19,
+      "fy2324": 22,
+      "ytd": 10,
+      "change": -13.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.0,
+      "fy2324": 75.9,
+      "ytd": 71.4,
+      "change": 19.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 119
+  },
+  "818": {
+    "name": "Egypt",
+    "lodged": {
+      "fy2425": 306,
+      "fy2324": 423,
+      "ytd": 381,
+      "change": -27.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 171,
+      "fy2324": 168,
+      "ytd": 162,
+      "change": 1.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 55.9,
+      "fy2324": 39.7,
+      "ytd": 42.5,
+      "change": 16.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 56
+  },
+  "012": {
+    "name": "Algeria",
+    "lodged": {
+      "fy2425": 21,
+      "fy2324": 29,
+      "ytd": 27,
+      "change": -27.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 15,
+      "fy2324": 12,
+      "ytd": 9,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 71.4,
+      "fy2324": 41.4,
+      "ytd": 33.3,
+      "change": 30.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 118
+  },
+  "626": {
+    "name": "Timor-Leste",
+    "lodged": {
+      "fy2425": 140,
+      "fy2324": 202,
+      "ytd": 110,
+      "change": -30.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 125,
+      "fy2324": 189,
+      "ytd": 98,
+      "change": -33.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.3,
+      "fy2324": 93.6,
+      "ytd": 89.1,
+      "change": -4.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 73
+  },
+  "499": {
+    "name": "Montenegro",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 3,
+      "ytd": 2,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 2,
+      "ytd": 3,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 66.7,
+      "ytd": 150.0,
+      "change": 0.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 159
+  },
+  "352": {
+    "name": "Iceland",
+    "lodged": {
+      "fy2425": 25,
+      "fy2324": 21,
+      "ytd": 5,
+      "change": 19.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 24,
+      "fy2324": 21,
+      "ytd": 6,
+      "change": 14.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 96.0,
+      "fy2324": 100.0,
+      "ytd": 120.0,
+      "change": -4.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 110
+  },
+  "296": {
+    "name": "Kiribati",
+    "lodged": {
+      "fy2425": 86,
+      "fy2324": 100,
+      "ytd": 32,
+      "change": -14.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 84,
+      "fy2324": 85,
+      "ytd": 34,
+      "change": -1.2,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 97.7,
+      "fy2324": 85.0,
+      "ytd": 106.2,
+      "change": 12.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 87
+  },
+  "376": {
+    "name": "Israel",
+    "lodged": {
+      "fy2425": 112,
+      "fy2324": 111,
+      "ytd": 62,
+      "change": 0.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 82,
+      "fy2324": 71,
+      "ytd": 28,
+      "change": 15.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 73.2,
+      "fy2324": 64.0,
+      "ytd": 45.2,
+      "change": 9.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 79
+  },
+  "854": {
+    "name": "Burkina Faso",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 1,
+      "ytd": 2,
+      "change": 300.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 2,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 25.0,
+      "fy2324": 100.0,
+      "ytd": 100.0,
+      "change": -75.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 154
+  },
+  "242": {
+    "name": "Fiji",
+    "lodged": {
+      "fy2425": 1718,
+      "fy2324": 3219,
+      "ytd": 1097,
+      "change": -46.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1140,
+      "fy2324": 2135,
+      "ytd": 638,
+      "change": -46.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.4,
+      "fy2324": 66.3,
+      "ytd": 58.2,
+      "change": 0.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 35
+  },
+  "442": {
+    "name": "Luxembourg",
+    "lodged": {
+      "fy2425": 31,
+      "fy2324": 27,
+      "ytd": 16,
+      "change": 14.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 30,
+      "fy2324": 24,
+      "ytd": 16,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 96.8,
+      "fy2324": 88.9,
+      "ytd": 100.0,
+      "change": 7.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 103
+  },
+  "400": {
+    "name": "Jordan",
+    "lodged": {
+      "fy2425": 257,
+      "fy2324": 315,
+      "ytd": 149,
+      "change": -18.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 191,
+      "fy2324": 158,
+      "ytd": 113,
+      "change": 20.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 74.3,
+      "fy2324": 50.2,
+      "ytd": 75.8,
+      "change": 24.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 60
+  },
+  "776": {
+    "name": "Tonga",
+    "lodged": {
+      "fy2425": 185,
+      "fy2324": 167,
+      "ytd": 90,
+      "change": 10.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 162,
+      "fy2324": 125,
+      "ytd": 85,
+      "change": 29.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 87.6,
+      "fy2324": 74.9,
+      "ytd": 94.4,
+      "change": 12.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 66
+  },
+  "008": {
+    "name": "Albania",
+    "lodged": {
+      "fy2425": 40,
+      "fy2324": 71,
+      "ytd": 27,
+      "change": -43.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 14,
+      "fy2324": 20,
+      "ytd": 11,
+      "change": -30.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 35.0,
+      "fy2324": 28.2,
+      "ytd": 40.7,
+      "change": 6.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 98
+  },
+  "300": {
+    "name": "Greece",
+    "lodged": {
+      "fy2425": 52,
+      "fy2324": 121,
+      "ytd": 32,
+      "change": -57.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 72,
+      "fy2324": 74,
+      "ytd": 26,
+      "change": -2.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 138.5,
+      "fy2324": 61.2,
+      "ytd": 81.2,
+      "change": 77.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 94
+  },
+  "040": {
+    "name": "Austria",
+    "lodged": {
+      "fy2425": 206,
+      "fy2324": 211,
+      "ytd": 122,
+      "change": -2.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 202,
+      "fy2324": 189,
+      "ytd": 121,
+      "change": 6.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.1,
+      "fy2324": 89.6,
+      "ytd": 99.2,
+      "change": 8.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 65
+  },
+  "024": {
+    "name": "Angola",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 6,
+      "ytd": 2,
+      "change": -33.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 0,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 25.0,
+      "fy2324": 16.7,
+      "ytd": 0.0,
+      "change": 8.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 155
+  },
+  "798": {
+    "name": "Tuvalu",
+    "lodged": {
+      "fy2425": 30,
+      "fy2324": 55,
+      "ytd": 17,
+      "change": -45.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 49,
+      "fy2324": 32,
+      "ytd": 18,
+      "change": 53.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 163.3,
+      "fy2324": 58.2,
+      "ytd": 105.9,
+      "change": 105.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 104
+  },
+  "704": {
+    "name": "Vietnam",
+    "lodged": {
+      "fy2425": 12148,
+      "fy2324": 22799,
+      "ytd": 6362,
+      "change": -46.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11593,
+      "fy2324": 14512,
+      "ytd": 5496,
+      "change": -20.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.4,
+      "fy2324": 63.7,
+      "ytd": 86.4,
+      "change": 31.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 5
+  },
+  "528": {
+    "name": "Netherlands, Kingdom of The",
+    "lodged": {
+      "fy2425": 575,
+      "fy2324": 695,
+      "ytd": 231,
+      "change": -17.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 601,
+      "fy2324": 620,
+      "ytd": 225,
+      "change": -3.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 104.5,
+      "fy2324": 89.2,
+      "ytd": 97.4,
+      "change": 15.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 48
+  },
+  "031": {
+    "name": "Azerbaijan",
+    "lodged": {
+      "fy2425": 22,
+      "fy2324": 43,
+      "ytd": 19,
+      "change": -48.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 21,
+      "fy2324": 22,
+      "ytd": 15,
+      "change": -4.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.5,
+      "fy2324": 51.2,
+      "ytd": 78.9,
+      "change": 44.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 115
+  },
+  "728": {
+    "name": "Republic of South Sudan",
+    "lodged": {
+      "fy2425": 7,
+      "fy2324": 15,
+      "ytd": 1,
+      "change": -53.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 1,
+      "ytd": 3,
+      "change": 200.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 42.9,
+      "fy2324": 6.7,
+      "ytd": 300.0,
+      "change": 36.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 141
+  },
+  "702": {
+    "name": "Singapore",
+    "lodged": {
+      "fy2425": 2888,
+      "fy2324": 3242,
+      "ytd": 1700,
+      "change": -10.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2772,
+      "fy2324": 3022,
+      "ytd": 1749,
+      "change": -8.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 96.0,
+      "fy2324": 93.2,
+      "ytd": 102.9,
+      "change": 2.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 24
+  },
+  "076": {
+    "name": "Brazil",
+    "lodged": {
+      "fy2425": 12505,
+      "fy2324": 16825,
+      "ytd": 4549,
+      "change": -25.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11790,
+      "fy2324": 10832,
+      "ytd": 5132,
+      "change": 8.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 94.3,
+      "fy2324": 64.4,
+      "ytd": 112.8,
+      "change": 29.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 4
+  },
+  "188": {
+    "name": "Costa Rica",
+    "lodged": {
+      "fy2425": 32,
+      "fy2324": 57,
+      "ytd": 18,
+      "change": -43.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 29,
+      "fy2324": 37,
+      "ytd": 18,
+      "change": -21.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 90.6,
+      "fy2324": 64.9,
+      "ytd": 100.0,
+      "change": 25.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 102
+  },
+  "740": {
+    "name": "Suriname",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 2,
+      "ytd": 1,
+      "change": 50.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 2,
+      "ytd": 2,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 100.0,
+      "ytd": 200.0,
+      "change": -33.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 160
+  },
+  "768": {
+    "name": "Togo",
+    "lodged": {
+      "fy2425": 0,
+      "fy2324": 1,
+      "ytd": 1,
+      "change": -100.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 0,
+      "fy2324": 0,
+      "ytd": 0,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": null,
+      "fy2324": 0.0,
+      "ytd": 0.0,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 166
+  },
+  "360": {
+    "name": "Indonesia",
+    "lodged": {
+      "fy2425": 10748,
+      "fy2324": 12075,
+      "ytd": 6022,
+      "change": -11.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 9492,
+      "fy2324": 8830,
+      "ytd": 5937,
+      "change": 7.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 88.3,
+      "fy2324": 73.1,
+      "ytd": 98.6,
+      "change": 15.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 7
+  },
+  "052": {
+    "name": "Barbados",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 4,
+      "ytd": 1,
+      "change": -25.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 3,
+      "ytd": 0,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 75.0,
+      "ytd": 0.0,
+      "change": 25.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 161
+  },
+  "608": {
+    "name": "Philippines",
+    "lodged": {
+      "fy2425": 10346,
+      "fy2324": 23574,
+      "ytd": 6353,
+      "change": -56.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 8044,
+      "fy2324": 11143,
+      "ytd": 4741,
+      "change": -27.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 77.7,
+      "fy2324": 47.3,
+      "ytd": 74.6,
+      "change": 30.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 8
+  },
+  "364": {
+    "name": "Iran",
+    "lodged": {
+      "fy2425": 1228,
+      "fy2324": 1546,
+      "ytd": 801,
+      "change": -20.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1093,
+      "fy2324": 1288,
+      "ytd": 741,
+      "change": -15.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.0,
+      "fy2324": 83.3,
+      "ytd": 92.5,
+      "change": 5.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 38
+  },
+  "410": {
+    "name": "Korea, South",
+    "lodged": {
+      "fy2425": 6518,
+      "fy2324": 6765,
+      "ytd": 3643,
+      "change": -3.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5890,
+      "fy2324": 4839,
+      "ytd": 3703,
+      "change": 21.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 90.4,
+      "fy2324": 71.5,
+      "ytd": 101.6,
+      "change": 18.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 14
+  },
+  "480": {
+    "name": "Mauritius",
+    "lodged": {
+      "fy2425": 773,
+      "fy2324": 1080,
+      "ytd": 350,
+      "change": -28.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 640,
+      "fy2324": 714,
+      "ytd": 347,
+      "change": -10.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 82.8,
+      "fy2324": 66.1,
+      "ytd": 99.1,
+      "change": 16.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 42
+  },
+  "586": {
+    "name": "Pakistan",
+    "lodged": {
+      "fy2425": 8154,
+      "fy2324": 18087,
+      "ytd": 5943,
+      "change": -54.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3528,
+      "fy2324": 6318,
+      "ytd": 3456,
+      "change": -44.2,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 43.3,
+      "fy2324": 34.9,
+      "ytd": 58.2,
+      "change": 8.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 10
+  },
+  "191": {
+    "name": "Croatia",
+    "lodged": {
+      "fy2425": 30,
+      "fy2324": 26,
+      "ytd": 19,
+      "change": 15.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 26,
+      "fy2324": 21,
+      "ytd": 16,
+      "change": 23.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 86.7,
+      "fy2324": 80.8,
+      "ytd": 84.2,
+      "change": 5.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 105
+  },
+  "051": {
+    "name": "Armenia",
+    "lodged": {
+      "fy2425": 12,
+      "fy2324": 19,
+      "ytd": 19,
+      "change": -36.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11,
+      "fy2324": 11,
+      "ytd": 12,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 91.7,
+      "fy2324": 57.9,
+      "ytd": 63.2,
+      "change": 33.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 131
+  },
+  "604": {
+    "name": "Peru",
+    "lodged": {
+      "fy2425": 1215,
+      "fy2324": 1969,
+      "ytd": 499,
+      "change": -38.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1116,
+      "fy2324": 1176,
+      "ytd": 414,
+      "change": -5.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 91.9,
+      "fy2324": 59.7,
+      "ytd": 83.0,
+      "change": 32.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 39
+  },
+  "096": {
+    "name": "Brunei Darussalam",
+    "lodged": {
+      "fy2425": 125,
+      "fy2324": 122,
+      "ytd": 92,
+      "change": 2.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 115,
+      "fy2324": 115,
+      "ytd": 91,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 92.0,
+      "fy2324": 94.3,
+      "ytd": 98.9,
+      "change": -2.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 75
+  },
+  "417": {
+    "name": "Kyrgyzstan",
+    "lodged": {
+      "fy2425": 23,
+      "fy2324": 33,
+      "ytd": 8,
+      "change": -30.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 16,
+      "fy2324": 16,
+      "ytd": 7,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 69.6,
+      "fy2324": 48.5,
+      "ytd": 87.5,
+      "change": 21.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 114
+  },
+  "418": {
+    "name": "Lao Peoples Dem Republic",
+    "lodged": {
+      "fy2425": 625,
+      "fy2324": 770,
+      "ytd": 275,
+      "change": -18.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 456,
+      "fy2324": 563,
+      "ytd": 236,
+      "change": -19.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 73.0,
+      "fy2324": 73.1,
+      "ytd": 85.8,
+      "change": -0.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 47
+  },
+  "100": {
+    "name": "Bulgaria",
+    "lodged": {
+      "fy2425": 35,
+      "fy2324": 44,
+      "ytd": 20,
+      "change": -20.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 33,
+      "fy2324": 32,
+      "ytd": 17,
+      "change": 3.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 94.3,
+      "fy2324": 72.7,
+      "ytd": 85.0,
+      "change": 21.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 100
+  },
+  "050": {
+    "name": "Bangladesh",
+    "lodged": {
+      "fy2425": 11711,
+      "fy2324": 10649,
+      "ytd": 11212,
+      "change": 10.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11070,
+      "fy2324": 8274,
+      "ytd": 8047,
+      "change": 33.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 94.5,
+      "fy2324": 77.7,
+      "ytd": 71.8,
+      "change": 16.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 6
+  },
+  "108": {
+    "name": "Burundi",
+    "lodged": {
+      "fy2425": 9,
+      "fy2324": 9,
+      "ytd": 5,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 4,
+      "ytd": 6,
+      "change": -50.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 22.2,
+      "fy2324": 44.4,
+      "ytd": 120.0,
+      "change": -22.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 135
+  },
+  "266": {
+    "name": "Gabon",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 1,
+      "ytd": 4,
+      "change": 200.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 0,
+      "ytd": 4,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 0.0,
+      "ytd": 100.0,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 162
+  },
+  "004": {
+    "name": "Afghanistan",
+    "lodged": {
+      "fy2425": 22,
+      "fy2324": 46,
+      "ytd": 26,
+      "change": -52.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5,
+      "fy2324": 11,
+      "ytd": 5,
+      "change": -54.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 22.7,
+      "fy2324": 23.9,
+      "ytd": 19.2,
+      "change": -1.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 116
+  },
+  "180": {
+    "name": "Congo, Dem Republic of The",
+    "lodged": {
+      "fy2425": 20,
+      "fy2324": 25,
+      "ytd": 7,
+      "change": -20.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11,
+      "fy2324": 11,
+      "ytd": 6,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 55.0,
+      "fy2324": 44.0,
+      "ytd": 85.7,
+      "change": 11.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 120
+  },
+  "800": {
+    "name": "Uganda",
+    "lodged": {
+      "fy2425": 152,
+      "fy2324": 197,
+      "ytd": 110,
+      "change": -22.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 113,
+      "fy2324": 133,
+      "ytd": 109,
+      "change": -15.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 74.3,
+      "fy2324": 67.5,
+      "ytd": 99.1,
+      "change": 6.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 70
+  },
+  "446": {
+    "name": "Macau (SAR of the PRC)",
+    "lodged": {
+      "fy2425": 185,
+      "fy2324": 245,
+      "ytd": 126,
+      "change": -24.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 177,
+      "fy2324": 208,
+      "ytd": 125,
+      "change": -14.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.7,
+      "fy2324": 84.9,
+      "ytd": 99.2,
+      "change": 10.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 67
+  },
+  "120": {
+    "name": "Cameroon",
+    "lodged": {
+      "fy2425": 24,
+      "fy2324": 33,
+      "ytd": 21,
+      "change": -27.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 10,
+      "fy2324": 8,
+      "ytd": 9,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 41.7,
+      "fy2324": 24.2,
+      "ytd": 42.9,
+      "change": 17.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 113
+  },
+  "688": {
+    "name": "Serbia",
+    "lodged": {
+      "fy2425": 25,
+      "fy2324": 38,
+      "ytd": 16,
+      "change": -34.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 18,
+      "fy2324": 34,
+      "ytd": 20,
+      "change": -47.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 72.0,
+      "fy2324": 89.5,
+      "ytd": 125.0,
+      "change": -17.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 111
+  },
+  "784": {
+    "name": "United Arab Emirates",
+    "lodged": {
+      "fy2425": 420,
+      "fy2324": 365,
+      "ytd": 424,
+      "change": 15.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 457,
+      "fy2324": 282,
+      "ytd": 405,
+      "change": 62.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 108.8,
+      "fy2324": 77.3,
+      "ytd": 95.5,
+      "change": 31.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 50
+  },
+  "340": {
+    "name": "Honduras",
+    "lodged": {
+      "fy2425": 15,
+      "fy2324": 13,
+      "ytd": 6,
+      "change": 15.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 12,
+      "fy2324": 10,
+      "ytd": 6,
+      "change": 20.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 80.0,
+      "fy2324": 76.9,
+      "ytd": 100.0,
+      "change": 3.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 126
+  },
+  "426": {
+    "name": "Lesotho",
+    "lodged": {
+      "fy2425": 5,
+      "fy2324": 3,
+      "ytd": 1,
+      "change": 66.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5,
+      "fy2324": 3,
+      "ytd": 1,
+      "change": 66.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 100.0,
+      "ytd": 100.0,
+      "change": 0.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 148
+  },
+  "104": {
+    "name": "Myanmar",
+    "lodged": {
+      "fy2425": 337,
+      "fy2324": 622,
+      "ytd": 118,
+      "change": -45.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 259,
+      "fy2324": 451,
+      "ytd": 87,
+      "change": -42.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 76.9,
+      "fy2324": 72.5,
+      "ytd": 73.7,
+      "change": 4.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 54
+  },
+  "388": {
+    "name": "Jamaica",
+    "lodged": {
+      "fy2425": 9,
+      "fy2324": 14,
+      "ytd": 8,
+      "change": -35.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 9,
+      "fy2324": 9,
+      "ytd": 5,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 64.3,
+      "ytd": 62.5,
+      "change": 35.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 136
+  },
+  "840": {
+    "name": "United States of America",
+    "lodged": {
+      "fy2425": 5920,
+      "fy2324": 5400,
+      "ytd": 3899,
+      "change": 9.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5841,
+      "fy2324": 5201,
+      "ytd": 3928,
+      "change": 12.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.7,
+      "fy2324": 96.3,
+      "ytd": 100.7,
+      "change": 2.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 16
+  },
+  "112": {
+    "name": "Belarus",
+    "lodged": {
+      "fy2425": 12,
+      "fy2324": 19,
+      "ytd": 8,
+      "change": -36.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 12,
+      "fy2324": 10,
+      "ytd": 9,
+      "change": 20.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 52.6,
+      "ytd": 112.5,
+      "change": 47.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 132
+  },
+  "760": {
+    "name": "Syrian Arab Republic",
+    "lodged": {
+      "fy2425": 22,
+      "fy2324": 29,
+      "ytd": 9,
+      "change": -24.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 8,
+      "fy2324": 12,
+      "ytd": 4,
+      "change": -33.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 36.4,
+      "fy2324": 41.4,
+      "ytd": 44.4,
+      "change": -5.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 117
+  },
+  "348": {
+    "name": "Hungary",
+    "lodged": {
+      "fy2425": 102,
+      "fy2324": 116,
+      "ytd": 46,
+      "change": -12.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 111,
+      "fy2324": 83,
+      "ytd": 41,
+      "change": 33.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 108.8,
+      "fy2324": 71.6,
+      "ytd": 89.1,
+      "change": 37.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 81
+  },
+  "620": {
+    "name": "Portugal",
+    "lodged": {
+      "fy2425": 262,
+      "fy2324": 319,
+      "ytd": 147,
+      "change": -17.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 251,
+      "fy2324": 228,
+      "ytd": 148,
+      "change": 10.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.8,
+      "fy2324": 71.5,
+      "ytd": 100.7,
+      "change": 24.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 59
+  },
+  "748": {
+    "name": "Eswatini",
+    "lodged": {
+      "fy2425": 5,
+      "fy2324": 4,
+      "ytd": 1,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5,
+      "fy2324": 3,
+      "ytd": 2,
+      "change": 66.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 75.0,
+      "ytd": 200.0,
+      "change": 25.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 149
+  },
+  "192": {
+    "name": "Cuba",
+    "lodged": {
+      "fy2425": 8,
+      "fy2324": 17,
+      "ytd": 2,
+      "change": -52.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5,
+      "fy2324": 8,
+      "ytd": 1,
+      "change": -37.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 62.5,
+      "fy2324": 47.1,
+      "ytd": 50.0,
+      "change": 15.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 139
+  },
+  "440": {
+    "name": "Lithuania",
+    "lodged": {
+      "fy2425": 287,
+      "fy2324": 280,
+      "ytd": 96,
+      "change": 2.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 254,
+      "fy2324": 235,
+      "ytd": 116,
+      "change": 8.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 88.5,
+      "fy2324": 83.9,
+      "ytd": 120.8,
+      "change": 4.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 57
+  },
+  "320": {
+    "name": "Guatemala",
+    "lodged": {
+      "fy2425": 60,
+      "fy2324": 100,
+      "ytd": 33,
+      "change": -40.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 61,
+      "fy2324": 73,
+      "ytd": 33,
+      "change": -16.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 101.7,
+      "fy2324": 73.0,
+      "ytd": 100.0,
+      "change": 28.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 93
+  },
+  "566": {
+    "name": "Nigeria",
+    "lodged": {
+      "fy2425": 1042,
+      "fy2324": 1935,
+      "ytd": 633,
+      "change": -46.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 652,
+      "fy2324": 897,
+      "ytd": 670,
+      "change": -27.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 62.6,
+      "fy2324": 46.4,
+      "ytd": 105.8,
+      "change": 16.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 41
+  },
+  "454": {
+    "name": "Malawi",
+    "lodged": {
+      "fy2425": 27,
+      "fy2324": 50,
+      "ytd": 22,
+      "change": -46.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 28,
+      "fy2324": 28,
+      "ytd": 19,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 103.7,
+      "fy2324": 56.0,
+      "ytd": 86.4,
+      "change": 47.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 108
+  },
+  "682": {
+    "name": "Saudi Arabia",
+    "lodged": {
+      "fy2425": 1837,
+      "fy2324": 2206,
+      "ytd": 1169,
+      "change": -16.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1831,
+      "fy2324": 1901,
+      "ytd": 1324,
+      "change": -3.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 99.7,
+      "fy2324": 86.2,
+      "ytd": 113.3,
+      "change": 13.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 34
+  },
+  "064": {
+    "name": "Bhutan",
+    "lodged": {
+      "fy2425": 4170,
+      "fy2324": 6358,
+      "ytd": 3175,
+      "change": -34.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2965,
+      "fy2324": 4693,
+      "ytd": 3146,
+      "change": -36.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 71.1,
+      "fy2324": 73.8,
+      "ytd": 99.1,
+      "change": -2.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 18
+  },
+  "204": {
+    "name": "Benin",
+    "lodged": {
+      "fy2425": 1,
+      "fy2324": 2,
+      "ytd": 3,
+      "change": -50.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 2,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 50.0,
+      "ytd": 66.7,
+      "change": 50.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 165
+  },
+  "231": {
+    "name": "Ethiopia",
+    "lodged": {
+      "fy2425": 177,
+      "fy2324": 178,
+      "ytd": 114,
+      "change": -0.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 157,
+      "fy2324": 141,
+      "ytd": 98,
+      "change": 11.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 88.7,
+      "fy2324": 79.2,
+      "ytd": 86.0,
+      "change": 9.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 68
+  },
+  "705": {
+    "name": "Slovenia",
+    "lodged": {
+      "fy2425": 25,
+      "fy2324": 31,
+      "ytd": 11,
+      "change": -19.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 21,
+      "fy2324": 24,
+      "ytd": 13,
+      "change": -12.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 84.0,
+      "fy2324": 77.4,
+      "ytd": 118.2,
+      "change": 6.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 112
+  },
+  "710": {
+    "name": "South Africa",
+    "lodged": {
+      "fy2425": 389,
+      "fy2324": 585,
+      "ytd": 249,
+      "change": -33.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 398,
+      "fy2324": 364,
+      "ytd": 234,
+      "change": 9.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 102.3,
+      "fy2324": 62.2,
+      "ytd": 94.0,
+      "change": 40.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 51
+  },
+  "356": {
+    "name": "India",
+    "lodged": {
+      "fy2425": 55156,
+      "fy2324": 82257,
+      "ytd": 35750,
+      "change": -32.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 41700,
+      "fy2324": 43755,
+      "ytd": 23469,
+      "change": -4.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 75.6,
+      "fy2324": 53.2,
+      "ytd": 65.6,
+      "change": 22.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 2
+  },
+  "414": {
+    "name": "Kuwait",
+    "lodged": {
+      "fy2425": 271,
+      "fy2324": 271,
+      "ytd": 250,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 267,
+      "fy2324": 245,
+      "ytd": 229,
+      "change": 9.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.5,
+      "fy2324": 90.4,
+      "ytd": 91.6,
+      "change": 8.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 58
+  },
+  "208": {
+    "name": "Denmark",
+    "lodged": {
+      "fy2425": 647,
+      "fy2324": 771,
+      "ytd": 221,
+      "change": -16.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 651,
+      "fy2324": 757,
+      "ytd": 234,
+      "change": -14.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.6,
+      "fy2324": 98.2,
+      "ytd": 105.9,
+      "change": 2.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 45
+  },
+  "450": {
+    "name": "Madagascar",
+    "lodged": {
+      "fy2425": 15,
+      "fy2324": 18,
+      "ytd": 10,
+      "change": -16.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11,
+      "fy2324": 11,
+      "ytd": 4,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 73.3,
+      "fy2324": 61.1,
+      "ytd": 40.0,
+      "change": 12.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 127
+  },
+  "642": {
+    "name": "Romania",
+    "lodged": {
+      "fy2425": 81,
+      "fy2324": 84,
+      "ytd": 30,
+      "change": -3.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 71,
+      "fy2324": 57,
+      "ytd": 29,
+      "change": 24.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 87.7,
+      "fy2324": 67.9,
+      "ytd": 96.7,
+      "change": 19.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 89
+  },
+  "583": {
+    "name": "Micronesia",
+    "lodged": {
+      "fy2425": 20,
+      "fy2324": 17,
+      "ytd": 41,
+      "change": 17.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 19,
+      "fy2324": 17,
+      "ytd": 40,
+      "change": 11.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.0,
+      "fy2324": 100.0,
+      "ytd": 97.6,
+      "change": -5.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 121
+  },
+  "512": {
+    "name": "Oman",
+    "lodged": {
+      "fy2425": 102,
+      "fy2324": 118,
+      "ytd": 106,
+      "change": -13.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 97,
+      "fy2324": 112,
+      "ytd": 110,
+      "change": -13.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 95.1,
+      "fy2324": 94.9,
+      "ytd": 103.8,
+      "change": 0.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 82
+  },
+  "070": {
+    "name": "Bosnia and Herzegovina",
+    "lodged": {
+      "fy2425": 6,
+      "fy2324": 21,
+      "ytd": 2,
+      "change": -71.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 4,
+      "fy2324": 15,
+      "ytd": 3,
+      "change": -73.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 71.4,
+      "ytd": 150.0,
+      "change": -4.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 143
+  },
+  "392": {
+    "name": "Japan",
+    "lodged": {
+      "fy2425": 6880,
+      "fy2324": 8388,
+      "ytd": 3151,
+      "change": -18.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 6811,
+      "fy2324": 7280,
+      "ytd": 3236,
+      "change": -6.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 99.0,
+      "fy2324": 86.8,
+      "ytd": 102.7,
+      "change": 12.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 13
+  },
+  "504": {
+    "name": "Morocco",
+    "lodged": {
+      "fy2425": 79,
+      "fy2324": 103,
+      "ytd": 42,
+      "change": -23.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 57,
+      "fy2324": 51,
+      "ytd": 19,
+      "change": 11.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 72.2,
+      "fy2324": 49.5,
+      "ytd": 45.2,
+      "change": 22.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 90
+  },
+  "598": {
+    "name": "Papua New Guinea",
+    "lodged": {
+      "fy2425": 1072,
+      "fy2324": 1129,
+      "ytd": 718,
+      "change": -5.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 964,
+      "fy2324": 771,
+      "ytd": 610,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.9,
+      "fy2324": 68.3,
+      "ytd": 85.0,
+      "change": 21.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 40
+  },
+  "324": {
+    "name": "Guinea",
+    "lodged": {
+      "fy2425": 5,
+      "fy2324": 1,
+      "ytd": 1,
+      "change": 400.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 1,
+      "ytd": 0,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 20.0,
+      "fy2324": 100.0,
+      "ytd": 0.0,
+      "change": -80.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 150
+  },
+  "384": {
+    "name": "Cote d'Ivoire",
+    "lodged": {
+      "fy2425": 6,
+      "fy2324": 4,
+      "ytd": 7,
+      "change": 50.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 3,
+      "ytd": 2,
+      "change": -66.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 16.7,
+      "fy2324": 75.0,
+      "ytd": 28.6,
+      "change": -58.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 144
+  },
+  "694": {
+    "name": "Sierra Leone",
+    "lodged": {
+      "fy2425": 14,
+      "fy2324": 28,
+      "ytd": 9,
+      "change": -50.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 10,
+      "fy2324": 13,
+      "ytd": 7,
+      "change": -23.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 71.4,
+      "fy2324": 46.4,
+      "ytd": 77.8,
+      "change": 25.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 129
+  },
+  "470": {
+    "name": "Malta",
+    "lodged": {
+      "fy2425": 19,
+      "fy2324": 16,
+      "ytd": 4,
+      "change": 18.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 15,
+      "fy2324": 12,
+      "ytd": 2,
+      "change": 25.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 78.9,
+      "fy2324": 75.0,
+      "ytd": 50.0,
+      "change": 3.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 123
+  },
+  "496": {
+    "name": "Mongolia",
+    "lodged": {
+      "fy2425": 2288,
+      "fy2324": 4429,
+      "ytd": 868,
+      "change": -48.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1388,
+      "fy2324": 2683,
+      "ytd": 877,
+      "change": -48.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 60.7,
+      "fy2324": 60.6,
+      "ytd": 101.0,
+      "change": 0.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 29
+  },
+  "152": {
+    "name": "Chile",
+    "lodged": {
+      "fy2425": 3100,
+      "fy2324": 4088,
+      "ytd": 1141,
+      "change": -24.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3077,
+      "fy2324": 2975,
+      "ytd": 1256,
+      "change": 3.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 99.3,
+      "fy2324": 72.8,
+      "ytd": 110.1,
+      "change": 26.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 22
+  },
+  "268": {
+    "name": "Georgia",
+    "lodged": {
+      "fy2425": 11,
+      "fy2324": 7,
+      "ytd": 3,
+      "change": 57.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 10,
+      "fy2324": 5,
+      "ytd": 2,
+      "change": 100.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 90.9,
+      "fy2324": 71.4,
+      "ytd": 66.7,
+      "change": 19.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 134
+  },
+  "056": {
+    "name": "Belgium",
+    "lodged": {
+      "fy2425": 343,
+      "fy2324": 338,
+      "ytd": 176,
+      "change": 1.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 308,
+      "fy2324": 297,
+      "ytd": 183,
+      "change": 3.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.8,
+      "fy2324": 87.9,
+      "ytd": 104.0,
+      "change": 1.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 53
+  },
+  "422": {
+    "name": "Lebanon",
+    "lodged": {
+      "fy2425": 154,
+      "fy2324": 296,
+      "ytd": 78,
+      "change": -48.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 103,
+      "fy2324": 158,
+      "ytd": 53,
+      "change": -34.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.9,
+      "fy2324": 53.4,
+      "ytd": 67.9,
+      "change": 13.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 69
+  },
+  "858": {
+    "name": "Uruguay",
+    "lodged": {
+      "fy2425": 111,
+      "fy2324": 154,
+      "ytd": 60,
+      "change": -27.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 92,
+      "fy2324": 79,
+      "ytd": 53,
+      "change": 16.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 82.9,
+      "fy2324": 51.3,
+      "ytd": 88.3,
+      "change": 31.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 80
+  },
+  "804": {
+    "name": "Ukraine",
+    "lodged": {
+      "fy2425": 66,
+      "fy2324": 71,
+      "ytd": 44,
+      "change": -7.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 53,
+      "fy2324": 50,
+      "ytd": 25,
+      "change": 6.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 80.3,
+      "fy2324": 70.4,
+      "ytd": 56.8,
+      "change": 9.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 92
+  },
+  "788": {
+    "name": "Tunisia",
+    "lodged": {
+      "fy2425": 14,
+      "fy2324": 16,
+      "ytd": 34,
+      "change": -12.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 15,
+      "fy2324": 7,
+      "ytd": 24,
+      "change": 114.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 107.1,
+      "fy2324": 43.8,
+      "ytd": 70.6,
+      "change": 63.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 130
+  },
+  "156": {
+    "name": "China, Peoples Republic of (excl SARs)",
+    "lodged": {
+      "fy2425": 92402,
+      "fy2324": 104303,
+      "ytd": 42920,
+      "change": -11.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 86160,
+      "fy2324": 88912,
+      "ytd": 43959,
+      "change": -3.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 93.2,
+      "fy2324": 85.2,
+      "ytd": 102.4,
+      "change": 8.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 1
+  },
+  "826": {
+    "name": "United Kingdom",
+    "lodged": {
+      "fy2425": 2228,
+      "fy2324": 2811,
+      "ytd": 1151,
+      "change": -20.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2314,
+      "fy2324": 2259,
+      "ytd": 947,
+      "change": 2.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 103.9,
+      "fy2324": 80.4,
+      "ytd": 82.3,
+      "change": 23.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 30
+  },
+  "634": {
+    "name": "Qatar",
+    "lodged": {
+      "fy2425": 9,
+      "fy2324": 9,
+      "ytd": 6,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 8,
+      "fy2324": 5,
+      "ytd": 4,
+      "change": 60.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 88.9,
+      "fy2324": 55.6,
+      "ytd": 66.7,
+      "change": 33.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 137
+  },
+  "578": {
+    "name": "Norway",
+    "lodged": {
+      "fy2425": 1511,
+      "fy2324": 1803,
+      "ytd": 631,
+      "change": -16.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1484,
+      "fy2324": 1777,
+      "ytd": 681,
+      "change": -16.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.2,
+      "fy2324": 98.6,
+      "ytd": 107.9,
+      "change": -0.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 37
+  },
+  "516": {
+    "name": "Namibia",
+    "lodged": {
+      "fy2425": 12,
+      "fy2324": 18,
+      "ytd": 13,
+      "change": -33.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 11,
+      "fy2324": 8,
+      "ytd": 9,
+      "change": 37.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 91.7,
+      "fy2324": 44.4,
+      "ytd": 69.2,
+      "change": 47.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 133
+  },
+  "524": {
+    "name": "Nepal",
+    "lodged": {
+      "fy2425": 28854,
+      "fy2324": 31910,
+      "ytd": 22416,
+      "change": -9.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 24424,
+      "fy2324": 14756,
+      "ytd": 16153,
+      "change": 65.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 84.6,
+      "fy2324": 46.2,
+      "ytd": 72.1,
+      "change": 38.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 3
+  },
+  "686": {
+    "name": "Senegal",
+    "lodged": {
+      "fy2425": 5,
+      "fy2324": 8,
+      "ytd": 0,
+      "change": -37.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 3,
+      "ytd": 0,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 60.0,
+      "fy2324": 37.5,
+      "ytd": null,
+      "change": 22.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 151
+  },
+  "600": {
+    "name": "Paraguay",
+    "lodged": {
+      "fy2425": 97,
+      "fy2324": 129,
+      "ytd": 34,
+      "change": -24.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 95,
+      "fy2324": 97,
+      "ytd": 44,
+      "change": -2.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 97.9,
+      "fy2324": 75.2,
+      "ytd": 129.4,
+      "change": 22.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 84
+  },
+  "428": {
+    "name": "Latvia",
+    "lodged": {
+      "fy2425": 33,
+      "fy2324": 29,
+      "ytd": 19,
+      "change": 13.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 27,
+      "fy2324": 21,
+      "ytd": 19,
+      "change": 28.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 81.8,
+      "fy2324": 72.4,
+      "ytd": 100.0,
+      "change": 9.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 101
+  },
+  "398": {
+    "name": "Kazakhstan",
+    "lodged": {
+      "fy2425": 121,
+      "fy2324": 143,
+      "ytd": 55,
+      "change": -15.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 93,
+      "fy2324": 107,
+      "ytd": 47,
+      "change": -13.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 76.9,
+      "fy2324": 74.8,
+      "ytd": 85.5,
+      "change": 2.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 77
+  },
+  "458": {
+    "name": "Malaysia",
+    "lodged": {
+      "fy2425": 6148,
+      "fy2324": 7462,
+      "ytd": 3334,
+      "change": -17.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5278,
+      "fy2324": 5588,
+      "ytd": 3265,
+      "change": -5.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 85.8,
+      "fy2324": 74.9,
+      "ytd": 97.9,
+      "change": 10.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 15
+  },
+  "332": {
+    "name": "Haiti",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 4,
+      "ytd": 3,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 3,
+      "ytd": 1,
+      "change": -33.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 50.0,
+      "fy2324": 75.0,
+      "ytd": 33.3,
+      "change": -25.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 156
+  },
+  "116": {
+    "name": "Cambodia",
+    "lodged": {
+      "fy2425": 1874,
+      "fy2324": 2090,
+      "ytd": 1342,
+      "change": -10.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1712,
+      "fy2324": 1791,
+      "ytd": 1226,
+      "change": -4.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 91.4,
+      "fy2324": 85.7,
+      "ytd": 91.4,
+      "change": 5.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 32
+  },
+  "380": {
+    "name": "Italy",
+    "lodged": {
+      "fy2425": 2380,
+      "fy2324": 2416,
+      "ytd": 1111,
+      "change": -1.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2408,
+      "fy2324": 1779,
+      "ytd": 1159,
+      "change": 35.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 101.2,
+      "fy2324": 73.6,
+      "ytd": 104.3,
+      "change": 27.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 28
+  },
+  "466": {
+    "name": "Mali",
+    "lodged": {
+      "fy2425": 48,
+      "fy2324": 3,
+      "ytd": 2,
+      "change": 1500.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1,
+      "fy2324": 0,
+      "ytd": 3,
+      "change": null,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 2.1,
+      "fy2324": 0.0,
+      "ytd": 150.0,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 96
+  },
+  "484": {
+    "name": "Mexico",
+    "lodged": {
+      "fy2425": 2778,
+      "fy2324": 2808,
+      "ytd": 1390,
+      "change": -1.1,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2634,
+      "fy2324": 2409,
+      "ytd": 1589,
+      "change": 9.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 94.8,
+      "fy2324": 85.8,
+      "ytd": 114.3,
+      "change": 9.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 26
+  },
+  "430": {
+    "name": "Liberia",
+    "lodged": {
+      "fy2425": 6,
+      "fy2324": 15,
+      "ytd": 4,
+      "change": -60.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3,
+      "fy2324": 3,
+      "ytd": 3,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 50.0,
+      "fy2324": 20.0,
+      "ytd": 75.0,
+      "change": 30.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 145
+  },
+  "643": {
+    "name": "Russian Federation",
+    "lodged": {
+      "fy2425": 363,
+      "fy2324": 593,
+      "ytd": 230,
+      "change": -38.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 344,
+      "fy2324": 445,
+      "ytd": 183,
+      "change": -22.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 94.8,
+      "fy2324": 75.0,
+      "ytd": 79.6,
+      "change": 19.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 52
+  },
+  "288": {
+    "name": "Ghana",
+    "lodged": {
+      "fy2425": 241,
+      "fy2324": 313,
+      "ytd": 123,
+      "change": -23.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 155,
+      "fy2324": 181,
+      "ytd": 137,
+      "change": -14.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 64.3,
+      "fy2324": 57.8,
+      "ytd": 111.4,
+      "change": 6.5,
+      "ytd_prior": null
+    },
+    "rank_lodged": 62
+  },
+  "585": {
+    "name": "Palau",
+    "lodged": {
+      "fy2425": 29,
+      "fy2324": 17,
+      "ytd": 12,
+      "change": 70.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 26,
+      "fy2324": 16,
+      "ytd": 14,
+      "change": 62.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.7,
+      "fy2324": 94.1,
+      "ytd": 116.7,
+      "change": -4.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 106
+  },
+  "498": {
+    "name": "Moldova",
+    "lodged": {
+      "fy2425": 6,
+      "fy2324": 9,
+      "ytd": 5,
+      "change": -33.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 2,
+      "ytd": 4,
+      "change": 0.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 33.3,
+      "fy2324": 22.2,
+      "ytd": 80.0,
+      "change": 11.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 146
+  },
+  "764": {
+    "name": "Thailand",
+    "lodged": {
+      "fy2425": 7111,
+      "fy2324": 11064,
+      "ytd": 2688,
+      "change": -35.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 5188,
+      "fy2324": 7291,
+      "ytd": 2318,
+      "change": -28.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 73.0,
+      "fy2324": 65.9,
+      "ytd": 86.2,
+      "change": 7.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 12
+  },
+  "170": {
+    "name": "Colombia",
+    "lodged": {
+      "fy2425": 10280,
+      "fy2324": 27025,
+      "ytd": 2926,
+      "change": -62.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 12131,
+      "fy2324": 14024,
+      "ytd": 2775,
+      "change": -13.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 118.0,
+      "fy2324": 51.9,
+      "ytd": 94.8,
+      "change": 66.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 9
+  },
+  "792": {
+    "name": "Turkiye",
+    "lodged": {
+      "fy2425": 2845,
+      "fy2324": 4571,
+      "ytd": 1461,
+      "change": -37.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2167,
+      "fy2324": 3114,
+      "ytd": 1089,
+      "change": -30.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 76.2,
+      "fy2324": 68.1,
+      "ytd": 74.5,
+      "change": 8.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 25
+  },
+  "548": {
+    "name": "Vanuatu",
+    "lodged": {
+      "fy2425": 147,
+      "fy2324": 114,
+      "ytd": 55,
+      "change": 28.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 136,
+      "fy2324": 94,
+      "ytd": 43,
+      "change": 44.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 92.5,
+      "fy2324": 82.5,
+      "ytd": 78.2,
+      "change": 10.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 71
+  },
+  "412": {
+    "name": "Kosovo",
+    "lodged": {
+      "fy2425": 7,
+      "fy2324": 10,
+      "ytd": 3,
+      "change": -30.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 8,
+      "fy2324": 5,
+      "ytd": 4,
+      "change": 60.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 114.3,
+      "fy2324": 50.0,
+      "ytd": 133.3,
+      "change": 64.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 142
+  },
+  "882": {
+    "name": "Samoa",
+    "lodged": {
+      "fy2425": 82,
+      "fy2324": 89,
+      "ytd": 46,
+      "change": -7.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 74,
+      "fy2324": 76,
+      "ytd": 47,
+      "change": -2.6,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 90.2,
+      "fy2324": 85.4,
+      "ytd": 102.2,
+      "change": 4.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 88
+  },
+  "344": {
+    "name": "Hong Kong (SAR of the PRC)",
+    "lodged": {
+      "fy2425": 3678,
+      "fy2324": 4441,
+      "ytd": 2311,
+      "change": -17.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3334,
+      "fy2324": 3575,
+      "ytd": 2131,
+      "change": -6.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 90.6,
+      "fy2324": 80.5,
+      "ytd": 92.2,
+      "change": 10.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 20
+  },
+  "178": {
+    "name": "Congo, Republic of",
+    "lodged": {
+      "fy2425": 0,
+      "fy2324": 2,
+      "ytd": 2,
+      "change": -100.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 0,
+      "fy2324": 1,
+      "ytd": 0,
+      "change": -100.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": null,
+      "fy2324": 50.0,
+      "ytd": 0.0,
+      "change": null,
+      "ytd_prior": null
+    },
+    "rank_lodged": 167
+  },
+  "222": {
+    "name": "El Salvador",
+    "lodged": {
+      "fy2425": 27,
+      "fy2324": 49,
+      "ytd": 14,
+      "change": -44.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 21,
+      "fy2324": 36,
+      "ytd": 18,
+      "change": -41.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 77.8,
+      "fy2324": 73.5,
+      "ytd": 128.6,
+      "change": 4.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 109
+  },
+  "158": {
+    "name": "Taiwan",
+    "lodged": {
+      "fy2425": 4964,
+      "fy2324": 5514,
+      "ytd": 2554,
+      "change": -10.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 4152,
+      "fy2324": 3709,
+      "ytd": 2573,
+      "change": 11.9,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 83.6,
+      "fy2324": 67.3,
+      "ytd": 100.7,
+      "change": 16.3,
+      "ytd_prior": null
+    },
+    "rank_lodged": 17
+  },
+  "752": {
+    "name": "Sweden",
+    "lodged": {
+      "fy2425": 639,
+      "fy2324": 712,
+      "ytd": 264,
+      "change": -10.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 642,
+      "fy2324": 657,
+      "ytd": 281,
+      "change": -2.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.5,
+      "fy2324": 92.3,
+      "ytd": 106.4,
+      "change": 8.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 46
+  },
+  "591": {
+    "name": "Panama",
+    "lodged": {
+      "fy2425": 38,
+      "fy2324": 48,
+      "ytd": 29,
+      "change": -20.8,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 44,
+      "fy2324": 32,
+      "ytd": 23,
+      "change": 37.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 115.8,
+      "fy2324": 66.7,
+      "ytd": 79.3,
+      "change": 49.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 99
+  },
+  "090": {
+    "name": "Solomon Islands",
+    "lodged": {
+      "fy2425": 230,
+      "fy2324": 171,
+      "ytd": 123,
+      "change": 34.5,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 205,
+      "fy2324": 142,
+      "ytd": 123,
+      "change": 44.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 89.1,
+      "fy2324": 83.0,
+      "ytd": 100.0,
+      "change": 6.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 64
+  },
+  "860": {
+    "name": "Uzbekistan",
+    "lodged": {
+      "fy2425": 252,
+      "fy2324": 248,
+      "ytd": 248,
+      "change": 1.6,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 204,
+      "fy2324": 131,
+      "ytd": 165,
+      "change": 55.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 81.0,
+      "fy2324": 52.8,
+      "ytd": 66.5,
+      "change": 28.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 61
+  },
+  "368": {
+    "name": "Iraq",
+    "lodged": {
+      "fy2425": 47,
+      "fy2324": 69,
+      "ytd": 28,
+      "change": -31.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 31,
+      "fy2324": 20,
+      "ytd": 22,
+      "change": 55.0,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.0,
+      "fy2324": 29.0,
+      "ytd": 78.6,
+      "change": 37.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 97
+  },
+  "270": {
+    "name": "Gambia",
+    "lodged": {
+      "fy2425": 3,
+      "fy2324": 9,
+      "ytd": 1,
+      "change": -66.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2,
+      "fy2324": 6,
+      "ytd": 3,
+      "change": -66.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 66.7,
+      "fy2324": 66.7,
+      "ytd": 300.0,
+      "change": 0.0,
+      "ytd_prior": null
+    },
+    "rank_lodged": 163
+  },
+  "032": {
+    "name": "Argentina",
+    "lodged": {
+      "fy2425": 1841,
+      "fy2324": 2446,
+      "ytd": 701,
+      "change": -24.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1869,
+      "fy2324": 1457,
+      "ytd": 720,
+      "change": 28.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 101.5,
+      "fy2324": 59.6,
+      "ytd": 102.7,
+      "change": 41.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 33
+  },
+  "218": {
+    "name": "Ecuador",
+    "lodged": {
+      "fy2425": 1607,
+      "fy2324": 2892,
+      "ytd": 597,
+      "change": -44.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 1500,
+      "fy2324": 1951,
+      "ytd": 597,
+      "change": -23.1,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 93.3,
+      "fy2324": 67.5,
+      "ytd": 100.0,
+      "change": 25.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 36
+  },
+  "068": {
+    "name": "Bolivia",
+    "lodged": {
+      "fy2425": 78,
+      "fy2324": 135,
+      "ytd": 28,
+      "change": -42.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 62,
+      "fy2324": 78,
+      "ytd": 29,
+      "change": -20.5,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 79.5,
+      "fy2324": 57.8,
+      "ytd": 103.6,
+      "change": 21.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 91
+  },
+  "250": {
+    "name": "France",
+    "lodged": {
+      "fy2425": 2572,
+      "fy2324": 2807,
+      "ytd": 1247,
+      "change": -8.4,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 2524,
+      "fy2324": 2260,
+      "ytd": 1190,
+      "change": 11.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.1,
+      "fy2324": 80.5,
+      "ytd": 95.4,
+      "change": 17.6,
+      "ytd_prior": null
+    },
+    "rank_lodged": 27
+  },
+  "276": {
+    "name": "Germany, Fed Republic of",
+    "lodged": {
+      "fy2425": 3241,
+      "fy2324": 3376,
+      "ytd": 1672,
+      "change": -4.0,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 3206,
+      "fy2324": 3090,
+      "ytd": 1704,
+      "change": 3.8,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 98.9,
+      "fy2324": 91.5,
+      "ytd": 101.9,
+      "change": 7.4,
+      "ytd_prior": null
+    },
+    "rank_lodged": 21
+  },
+  "834": {
+    "name": "Tanzania",
+    "lodged": {
+      "fy2425": 51,
+      "fy2324": 62,
+      "ytd": 35,
+      "change": -17.7,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 51,
+      "fy2324": 36,
+      "ytd": 27,
+      "change": 41.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 100.0,
+      "fy2324": 58.1,
+      "ytd": 77.1,
+      "change": 41.9,
+      "ytd_prior": null
+    },
+    "rank_lodged": 95
+  },
+  "729": {
+    "name": "Sudan",
+    "lodged": {
+      "fy2425": 20,
+      "fy2324": 19,
+      "ytd": 11,
+      "change": 5.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 13,
+      "fy2324": 12,
+      "ytd": 9,
+      "change": 8.3,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 65.0,
+      "fy2324": 63.2,
+      "ytd": 81.8,
+      "change": 1.8,
+      "ytd_prior": null
+    },
+    "rank_lodged": 122
+  },
+  "072": {
+    "name": "Botswana",
+    "lodged": {
+      "fy2425": 96,
+      "fy2324": 107,
+      "ytd": 42,
+      "change": -10.3,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 82,
+      "fy2324": 87,
+      "ytd": 41,
+      "change": -5.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 85.4,
+      "fy2324": 81.3,
+      "ytd": 97.6,
+      "change": 4.1,
+      "ytd_prior": null
+    },
+    "rank_lodged": 85
+  },
+  "894": {
+    "name": "Zambia",
+    "lodged": {
+      "fy2425": 89,
+      "fy2324": 148,
+      "ytd": 46,
+      "change": -39.9,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 71,
+      "fy2324": 72,
+      "ytd": 56,
+      "change": -1.4,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 79.8,
+      "fy2324": 48.6,
+      "ytd": 121.7,
+      "change": 31.2,
+      "ytd_prior": null
+    },
+    "rank_lodged": 86
+  },
+  "048": {
+    "name": "Bahrain",
+    "lodged": {
+      "fy2425": 4,
+      "fy2324": 13,
+      "ytd": 2,
+      "change": -69.2,
+      "ytd_prior": 0
+    },
+    "granted": {
+      "fy2425": 7,
+      "fy2324": 12,
+      "ytd": 1,
+      "change": -41.7,
+      "ytd_prior": 0
+    },
+    "rate": {
+      "fy2425": 175.0,
+      "fy2324": 92.3,
+      "ytd": 50.0,
+      "change": 82.7,
+      "ytd_prior": null
+    },
+    "rank_lodged": 157
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+
+let metric = 'lodged';
+let period = 'fy2425';
+let hoveredIso = null;
+let activeSector = 'all';
+let activeRegion = 'all';
+const tt = document.getElementById('tooltip');
+
+const REGION_COUNTRIES = {
+  "South Asia":                ["004","050","064","144","356","462","524","586"],
+  "Southeast Asia":            ["096","104","116","360","418","458","608","626","702","704","764"],
+  "East Asia":                 ["156","158","344","392","410","446","496"],
+  "Pacific":                   ["090","242","296","548","583","585","598","776","798","882"],
+  "Middle East & Central Asia":["048","275","364","368","376","398","400","414","417","422","512","634","682","760","784","792","860"],
+  "Europe":                    ["008","031","040","051","056","070","100","112","191","196","203","208","233","246","250","268","276","300","348","352","372","380","412","428","440","442","470","498","499","528","578","616","620","642","643","688","703","705","724","752","756","804","826"],
+  "Latin America":             ["032","052","068","076","152","170","188","192","214","218","222","320","340","388","484","558","591","600","604","740","780","858","862"],
+  "Africa":                    ["012","024","072","108","120","148","178","180","204","231","232","266","270","288","324","384","404","426","430","434","450","454","466","480","504","508","516","562","566","646","686","694","710","716","728","729","748","768","788","800","818","834","854","894"],
+  "North America & Oceania":   ["124","554","840"]
+};
+
+const SECTOR_DISPLAY = {
+  higher_ed:'Higher Ed', postgrad_research:'Postgrad Research',
+  vet:'VET', elicos:'ELICOS', schools:'Schools',
+  non_award:'Non-Award', foreign_affairs:'Foreign Affairs'
+};
+
+function getDisplayVal(iso) {
+  const d = VISA_DATA[iso]; if (!d) return null;
+  const periodKey = PERIOD_CFG[period].key;
+  if (activeSector !== 'all') {
+    const sd = SECTOR_DATA?.[iso]?.[periodKey]?.sectors?.[activeSector];
+    if (!sd) return null;
+    if (metric === 'rate') {
+      const v = sd.grant_rate;
+      return (v != null && v > 0) ? Math.min(v, 100) : null;
+    }
+    const v = sd[metric];
+    return (v != null && v > 0) ? v : null;
+  }
+  return getVal(iso);
+}
+
+function getCountryOpacity(iso) {
+  if (activeRegion === 'all') return 1;
+  return (REGION_COUNTRIES[activeRegion]?.includes(iso)) ? 1 : 0.15;
+}
+
+// ── PERIOD CONFIG ─────────────────────────────────────────────────────────────
+const PERIOD_CFG = {
+  fy2425: { key:'fy2425', chgKey:'change',     label:'FY 2024–25',        sublabel:'Jul 2024 – Jun 2025' },
+  ytd:    { key:'ytd',    chgKey:'ytd_change',  label:'YTD Jan 2026',           sublabel:'Jul 2025 – Jan 2026' },
+};
+
+const shortName = n => n
+  .replace('China, Peoples Republic of (excl SARs)','China')
+  .replace('Korea, South','South Korea')
+  .replace('United States of America','USA')
+  .replace('Germany, Fed Republic of','Germany')
+  .replace('Russian Federation','Russia')
+  .replace('Netherlands, Kingdom of The','Netherlands')
+  .replace('Lao Peoples Dem Republic','Laos')
+  .replace('Hong Kong (SAR of the PRC)','Hong Kong')
+  .replace('Macau (SAR of the PRC)','Macau')
+  .replace('Congo, Dem Republic of The','DR Congo')
+  .replace('Congo, Republic of','Congo')
+  .replace('Ireland, Republic of','Ireland')
+  .replace('Korea, North','North Korea')
+  .replace('Syrian Arab Republic','Syria')
+  .replace('Brunei Darussalam','Brunei')
+  .replace(', Fed Republic of','')
+  .replace(', Republic of','');
+
+const fmtVal = (v, m) => {
+  if (v == null || v === 0) return '—';
+  if (m === 'rate') return Math.min(v, 100).toFixed(1) + '%';
+  return Math.round(v).toLocaleString();
+};
+
+const fmtChg = (c, m) => {
+  if (c == null) return null;
+  const sym = c > 0 ? '↑ +' : '↓ ';
+  const unit = m === 'rate' ? 'pp' : '%';
+  return sym + Math.abs(c).toFixed(1) + unit;
+};
+
+function getVal(iso) {
+  const d = VISA_DATA[iso]; if (!d) return null;
+  const cfg = PERIOD_CFG[period];
+  const v = d[metric][cfg.key];
+  if (!v || v === 0) return null;
+  return metric === 'rate' ? Math.min(v, 100) : v;
+}
+
+function getChg(iso) {
+  const d = VISA_DATA[iso]; if (!d) return null;
+  return d[metric][PERIOD_CFG[period].chgKey] ?? null;
+}
+
+function buildScale() {
+  if (metric === 'rate') {
+    return d3.scaleSequential([30, 100],
+      d3.interpolateRgbBasis(['#fee2e2','#fde68a','#bbf7d0','#22c55e','#15803d']));
+  }
+  const vals = Object.keys(VISA_DATA)
+    .map(iso => { const v = getDisplayVal(iso); return v != null ? v : 0; })
+    .filter(v => v > 0);
+  const max = d3.max(vals) || 1;
+  return d3.scaleSequentialLog([1, max],
+    d3.interpolateRgbBasis(['#dbeafe','#93c5fd','#3b82f6','#1e40af','#1e3a8a']));
+}
+
+function drawLegend(scale) {
+  const canvas = document.getElementById('legend-canvas');
+  const ctx = canvas.getContext('2d');
+  const [lo, hi] = scale.domain();
+  for (let i = 0; i < 90; i++) {
+    const t = i / 90;
+    const v = metric === 'rate' ? lo + (hi-lo)*t : lo * Math.pow(hi/lo, t);
+    ctx.fillStyle = scale(v);
+    ctx.fillRect(i, 0, 1, 6);
+  }
+  document.getElementById('leg-lo').textContent = metric==='rate' ? lo+'%' : (lo<100 ? '1' : (lo/1000).toFixed(0)+'k');
+  document.getElementById('leg-hi').textContent = metric==='rate' ? hi+'%' : (hi/1000).toFixed(0)+'k';
+}
+
+// ── RENDER MAP ────────────────────────────────────────────────────────────────
+function renderMap() {
+  const scale = buildScale();
+  drawLegend(scale);
+  const n = Object.keys(VISA_DATA).filter(iso => getDisplayVal(iso) != null).length;
+  const cfg = PERIOD_CFG[period];
+  document.getElementById('data-note').textContent = n + ' countries · ' + cfg.label;
+  document.getElementById('ctrl-meta').textContent = n + ' countries mapped';
+  document.getElementById('header-meta').textContent =
+    'Primary applicants · 167 source countries · ' + cfg.sublabel;
+
+  d3.selectAll('.country')
+    .attr('fill', d => { const v = getDisplayVal(String(d.id)); return v != null ? scale(v) : '#d4d0c8'; })
+    .attr('opacity', d => getCountryOpacity(String(d.id)))
+    .classed('no-data', d => getDisplayVal(String(d.id)) == null);
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────────────────
+function renderTable() {
+  const cfg = PERIOD_CFG[period];
+  const periodKey = cfg.key;
+
+  // Build rows with sector-aware values
+  let rows = Object.entries(VISA_DATA).map(([iso, d]) => {
+    let val, sortVal;
+    if (activeSector !== 'all') {
+      const sd = SECTOR_DATA?.[iso]?.[periodKey]?.sectors?.[activeSector];
+      if (!sd) { val = null; sortVal = 0; }
+      else if (metric === 'rate') {
+        const gr = sd.grant_rate;
+        val = (gr != null && gr > 0) ? Math.min(gr, 100) : null;
+        sortVal = sd.granted || 0;
+      } else {
+        const v = sd[metric];
+        val = (v != null && v > 0) ? v : null;
+        sortVal = val || 0;
+      }
+    } else {
+      const raw = d[metric][periodKey];
+      val = raw ? (metric==='rate' ? Math.min(raw,100) : raw) : null;
+      sortVal = metric === 'rate' ? (d.granted[periodKey] || 0) : (val || 0);
+    }
+    const chg = d[metric][cfg.chgKey] ?? null;
+    return { iso, name: shortName(d.name), val, chg, sortVal };
+  });
+
+  // Region filter
+  if (activeRegion !== 'all') {
+    const regionSet = new Set(REGION_COUNTRIES[activeRegion] || []);
+    rows = rows.filter(r => regionSet.has(r.iso));
+  }
+
+  rows = rows.filter(r => r.val != null && r.val > 0)
+    .sort((a, b) => b.sortVal - a.sortVal)
+    .slice(0, 25);
+
+  // Subtitle
+  const labels = { lodged:'Visas Lodged', granted:'Visas Granted', rate:'Grant Rate' };
+  let subtitleParts = [cfg.label];
+  if (activeSector !== 'all') subtitleParts.push(SECTOR_DISPLAY[activeSector]);
+  if (activeRegion !== 'all') subtitleParts.push(activeRegion);
+  subtitleParts.push(metric === 'rate' ? 'ranked by grants' : 'ranked by volume');
+  document.getElementById('tp-title').textContent = 'Top 25 · ' + labels[metric];
+  document.getElementById('tp-sub').textContent = subtitleParts.join(' · ');
+
+  // KPI totals
+  const fmt = v => v > 1000 ? Math.round(v/1000)+'K' : Math.round(v).toLocaleString();
+  let tL, tG, tR;
+  if (activeSector !== 'all') {
+    const sg = SECTOR_GLOBAL?.[periodKey]?.[activeSector];
+    tL = sg?.lodged || 0;
+    tG = sg?.granted || 0;
+    tR = sg?.grant_rate ?? (tL > 0 ? tG/tL*100 : 0);
+    const bothActive = activeRegion !== 'all';
+    const lblSuffix = period === 'ytd' ? ' YTD Jan 2026' : ' FY24–25';
+    document.getElementById('hkpi-l-lbl').textContent = SECTOR_DISPLAY[activeSector] + ' Lodged' + (bothActive ? ' · Global' : lblSuffix);
+    document.getElementById('hkpi-g-lbl').textContent = SECTOR_DISPLAY[activeSector] + ' Granted' + (bothActive ? ' · Global' : lblSuffix);
+  } else if (activeRegion !== 'all') {
+    const regionSet = new Set(REGION_COUNTRIES[activeRegion] || []);
+    tL = 0; tG = 0;
+    Object.entries(VISA_DATA).forEach(([iso, d]) => {
+      if (regionSet.has(iso)) { tL += d.lodged[periodKey]||0; tG += d.granted[periodKey]||0; }
+    });
+    tR = tL > 0 ? tG/tL*100 : 0;
+    const lblSuffix = period === 'ytd' ? ' YTD Jan 2026' : ' FY24–25';
+    document.getElementById('hkpi-l-lbl').textContent = 'Lodged' + lblSuffix;
+    document.getElementById('hkpi-g-lbl').textContent = 'Granted' + lblSuffix;
+  } else {
+    tL = Object.values(VISA_DATA).reduce((s,d) => s + (d.lodged[periodKey]||0), 0);
+    tG = Object.values(VISA_DATA).reduce((s,d) => s + (d.granted[periodKey]||0), 0);
+    tR = tL > 0 ? tG/tL*100 : 0;
+    const lblSuffix = period === 'ytd' ? ' YTD Jan 2026' : ' FY24–25';
+    document.getElementById('hkpi-l-lbl').textContent = 'Lodged' + lblSuffix;
+    document.getElementById('hkpi-g-lbl').textContent = 'Granted' + lblSuffix;
+  }
+
+  document.getElementById('tf-l').textContent = fmt(tL);
+  document.getElementById('tf-g').textContent = fmt(tG);
+  document.getElementById('tf-r').textContent = tR.toFixed(1)+'%';
+  document.getElementById('hkpi-l').textContent = fmt(tL);
+  document.getElementById('hkpi-g').textContent = fmt(tG);
+  document.getElementById('hkpi-r').textContent = tR.toFixed(1)+'%';
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.map((r, i) => {
+    const c = r.chg;
+    const cls = c==null ? 'neu' : c>0 ? 'up' : 'dn';
+    const ct = fmtChg(c, metric) || '—';
+    return '<tr data-iso="' + r.iso + '" class="' + (hoveredIso===r.iso?'hl':'') + '">' +
+      '<td class="rn">' + (i+1) + '</td>' +
+      '<td class="rc">' + r.name + '</td>' +
+      '<td class="rv">' + fmtVal(r.val, metric) + '</td>' +
+      '<td><span class="rchg ' + cls + '">' + ct + '</span></td>' +
+      '</tr>';
+  }).join('');
+
+  tbody.querySelectorAll('tr[data-iso]').forEach(tr => {
+    tr.addEventListener('mouseenter', () => {
+      hoveredIso = tr.dataset.iso;
+      d3.selectAll('.country').attr('opacity',
+        d => String(d.id)===hoveredIso ? 1 : (getDisplayVal(String(d.id))!=null ? 0.38 : getCountryOpacity(String(d.id))));
+      tbody.querySelectorAll('tr').forEach(r => r.classList.toggle('hl', r.dataset.iso===hoveredIso));
+    });
+    tr.addEventListener('mouseleave', () => {
+      hoveredIso = null;
+      d3.selectAll('.country').attr('opacity', d => getCountryOpacity(String(d.id)));
+      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('hl'));
+    });
+  });
+}
+
+function updateDashboard() {
+  renderMap();
+  renderTable();
+  const isFiltered = activeSector !== 'all' || activeRegion !== 'all';
+  document.getElementById('filter-clear').classList.toggle('show', isFiltered);
+}
+
+// ── LOAD MAP ──────────────────────────────────────────────────────────────────
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+  const panel = document.querySelector('.map-panel');
+  const W = panel.clientWidth, H = panel.clientHeight;
+  const makeProj = (w, h) => d3.geoNaturalEarth1().scale(w/6.1).translate([w/2, h/2]);
+  let path = d3.geoPath(makeProj(W, H));
+
+  const svg = d3.select('#map-svg')
+    .attr('viewBox', '0 0 ' + W + ' ' + H)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+  const features = topojson.feature(world, world.objects.countries).features;
+  const scale = buildScale();
+
+  svg.selectAll('.country')
+    .data(features)
+    .join('path')
+    .attr('class', d => 'country' + (getDisplayVal(String(d.id))==null ? ' no-data' : ''))
+    .attr('d', path)
+    .attr('fill', d => { const v=getDisplayVal(String(d.id)); return v!=null ? scale(v) : '#d4d0c8'; })
+    .on('mousemove', function(event, d) {
+      const iso = String(d.id);
+      const rec = VISA_DATA[iso];
+      if (!rec) return;
+
+      const cfg = PERIOD_CFG[period];
+      const chg = rec[metric][cfg.chgKey];
+      const chgCol = chg==null ? '#999' : chg>0 ? '#6ee7b7' : '#fca5a5';
+      const isYTD = period === 'ytd';
+
+      // Context line
+      const ctxParts = ['Subclass 500'];
+      if (activeSector !== 'all') ctxParts.push(SECTOR_DISPLAY[activeSector]);
+      if (activeRegion !== 'all') ctxParts.push(activeRegion);
+      ctxParts.push(cfg.label);
+
+      // Country totals (always from VISA_DATA)
+      const tL = rec.lodged[cfg.key] || 0;
+      const tG = rec.granted[cfg.key] || 0;
+      const tR = rec.rate[cfg.key] != null ? Math.min(rec.rate[cfg.key], 100) : (tL > 0 ? tG/tL*100 : null);
+
+      let bodyHtml = '';
+      if (activeSector !== 'all') {
+        const sd = SECTOR_DATA?.[iso]?.[cfg.key]?.sectors?.[activeSector];
+        if (!sd || (!sd.lodged && !sd.grant_rate)) {
+          bodyHtml = '<div class="tt-row"><span class="tt-lbl" style="color:rgba(255,255,255,.45)">No ' + SECTOR_DISPLAY[activeSector] + ' data</span></div>';
+        } else {
+          bodyHtml += '<div class="tt-row tt-primary"><span class="tt-lbl">' + SECTOR_DISPLAY[activeSector] + ' Lodged</span><span class="tt-val">' + (sd.lodged||0).toLocaleString() + '</span></div>';
+          if (sd.grant_rate != null) {
+            bodyHtml += '<div class="tt-row"><span class="tt-lbl">' + SECTOR_DISPLAY[activeSector] + ' Grant Rate</span><span class="tt-val">' + sd.grant_rate.toFixed(1) + '%</span></div>';
+          }
+          bodyHtml += '<div class="tt-divider"></div>';
+          bodyHtml += '<div class="tt-row tt-muted"><span class="tt-lbl">Total Lodged</span><span class="tt-val">' + tL.toLocaleString() + '</span></div>';
+          if (tR != null) {
+            bodyHtml += '<div class="tt-row tt-muted"><span class="tt-lbl">Overall Rate</span><span class="tt-val">' + tR.toFixed(1) + '%</span></div>';
+          }
+        }
+      } else {
+        // All three metrics, active one first with emphasis
+        const metricRows = [
+          { key:'lodged',   label:'Lodged',     val: tL > 0 ? tL.toLocaleString() : '—' },
+          { key:'granted',  label:'Granted',    val: tG > 0 ? tG.toLocaleString() : '—' },
+          { key:'rate',     label:'Grant Rate', val: tR != null ? tR.toFixed(1)+'%' : '—' },
+        ];
+        const ai = metricRows.findIndex(r => r.key === metric);
+        if (ai > 0) { const [a] = metricRows.splice(ai, 1); metricRows.unshift(a); }
+        metricRows.forEach((r, i) => {
+          const cls = i === 0 ? 'tt-row tt-primary' : 'tt-row';
+          bodyHtml += '<div class="' + cls + '"><span class="tt-lbl">' + r.label + '</span><span class="tt-val">' + r.val + '</span></div>';
+        });
+      }
+
+      if (chg != null) {
+        bodyHtml += '<div class="tt-chg" style="color:' + chgCol + '">' + fmtChg(chg, metric) + (isYTD ? ' vs full prior year' : ' year on year') + '</div>';
+      }
+
+      tt.innerHTML =
+        '<div class="tt-name">' + shortName(rec.name) + '</div>' +
+        '<div class="tt-ctx">' + ctxParts.join(' · ') + '</div>' +
+        bodyHtml;
+
+      tt.classList.add('show');
+      tt.style.left = Math.min(event.clientX+14, window.innerWidth-216) + 'px';
+      tt.style.top  = Math.min(event.clientY-10, window.innerHeight-180) + 'px';
+
+      d3.selectAll('.country').attr('opacity',
+        dd => String(dd.id)===iso ? 1 : (getDisplayVal(String(dd.id))!=null ? 0.38 : getCountryOpacity(String(dd.id))));
+    })
+    .on('mouseleave', function() {
+      tt.classList.remove('show');
+      d3.selectAll('.country').attr('opacity', d => getCountryOpacity(String(d.id)));
+    });
+
+  drawLegend(scale);
+  renderTable();
+
+  window.addEventListener('resize', () => {
+    const W2 = panel.clientWidth, H2 = panel.clientHeight;
+    path = d3.geoPath(makeProj(W2, H2));
+    svg.attr('viewBox', '0 0 ' + W2 + ' ' + H2);
+    svg.selectAll('.country').attr('d', path);
+    renderMap();
+  });
+});
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('.mtab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    metric = btn.dataset.metric;
+    updateDashboard();
+  });
+});
+
+document.querySelectorAll('.ypill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ypill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    period = btn.dataset.period;
+    updateDashboard();
+  });
+});
+
+// ── FILTER PILLS ──────────────────────────────────────────────────────────────
+document.querySelectorAll('#sector-pills .fpill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#sector-pills .fpill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeSector = btn.dataset.sector;
+    updateDashboard();
+  });
+});
+
+document.querySelectorAll('#region-pills .fpill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#region-pills .fpill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeRegion = btn.dataset.region;
+    updateDashboard();
+  });
+});
+
+document.getElementById('filter-clear').addEventListener('click', () => {
+  activeSector = 'all';
+  activeRegion = 'all';
+  document.querySelectorAll('#sector-pills .fpill').forEach(b => b.classList.toggle('active', b.dataset.sector === 'all'));
+  document.querySelectorAll('#region-pills .fpill').forEach(b => b.classList.toggle('active', b.dataset.region === 'all'));
+  updateDashboard();
+});
+
+</script>
+<script src="sector_data.js"></script>
+</body>
+</html>
